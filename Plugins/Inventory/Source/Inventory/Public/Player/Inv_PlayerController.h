@@ -17,4 +17,15 @@ class INVENTORY_API AInv_PlayerController : public APlayerController
 
 protected:
 	virtual void BeginPlay() override;
+
+	virtual void SetupInputComponent() override;
+private:
+	UFUNCTION()
+	void PrimaryInteract();
+	
+	UPROPERTY(EditDefaultsOnly,Category="Inventory")	
+	TObjectPtr<class UInputMappingContext> DefaultIMC;
+
+	UPROPERTY(EditDefaultsOnly,Category="Inventory")	
+	TObjectPtr<class UInputAction> PrimaryInteractAction;
 };
