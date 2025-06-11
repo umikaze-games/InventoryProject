@@ -16,6 +16,7 @@ void AInv_PlayerController::BeginPlay()
 	{
 		SubSystem->AddMappingContext(DefaultIMC,0);
 	}
+	CreateHUDWidget();
 }
 
 void AInv_PlayerController::SetupInputComponent()
@@ -28,4 +29,15 @@ void AInv_PlayerController::SetupInputComponent()
 void AInv_PlayerController::PrimaryInteract()
 {
 	
+}
+
+void AInv_PlayerController::CreateHUDWidget()
+{
+	if (!IsLocalController())return;
+	HUDWidget=CreateWidget<UInv_HUDWidget>(this,HUDWidgetClass);
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->AddToViewport();
+	}
+		
 }
