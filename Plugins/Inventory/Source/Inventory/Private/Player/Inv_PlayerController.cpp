@@ -12,6 +12,7 @@ void AInv_PlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	UEnhancedInputLocalPlayerSubsystem*SubSystem=ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+	
 	if (IsValid(SubSystem))
 	{
 		SubSystem->AddMappingContext(DefaultIMC,0);
