@@ -6,12 +6,14 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Inventory.h"
+#include "Items/Components/Inv_ItemComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 AInv_PlayerController::AInv_PlayerController()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	TraceLength=500.f;
+	ItemTraceChannel=ECC_GameTraceChannel1;
 }
 
 void AInv_PlayerController::Tick(float DeltaSeconds)
@@ -54,10 +56,20 @@ void AInv_PlayerController::PrimaryInteract()
 	LastActor=ThisActor;
 	ThisActor=HitResult.GetActor();
 	UE_LOG(LogTemp,Warning,TEXT("Stopped tracing a last actor."));
+
+	if (!ThisActor.IsValid())
+	{
+		if (IsValid(HUDWidget)) HUDWidget->HidePickupMessage();
+	}
 	if (ThisActor==LastActor)return;
+	
 	if (ThisActor.IsValid())
 	{
 		UE_LOG(LogTemp,Warning,TEXT("Started tracing a new actor."));
+		UInv_ItemComponent* ItemComponent = ThisActor->FindComponentByClass<UInv_ItemComponent>();
+		if (!IsValid(ItemComponent)) return;
+
+		if (IsValid(HUDWidget)) HUDWidget->ShowPickupMessage(ItemComponent->GetPickupMessage());
 	}
 
 	if (LastActor.IsValid())
