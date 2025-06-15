@@ -44,6 +44,22 @@ void AInv_PlayerController::SetupInputComponent()
 
 void AInv_PlayerController::PrimaryInteract()
 {
+	
+}
+
+void AInv_PlayerController::CreateHUDWidget()
+{
+	if (!IsLocalController())return;
+	HUDWidget=CreateWidget<UInv_HUDWidget>(this,HUDWidgetClass);
+	if (IsValid(HUDWidget))
+	{
+		HUDWidget->AddToViewport();
+	}
+		
+}
+
+void AInv_PlayerController::TraceForItem()
+{
 	if (!IsValid(GEngine) || !IsValid(GEngine->GameViewport)) return;
 	FVector2D ViewpointSize;
 	GEngine->GameViewport->GetViewportSize(ViewpointSize);
@@ -55,7 +71,7 @@ void AInv_PlayerController::PrimaryInteract()
 	GetWorld()->LineTraceSingleByChannel(HitResult,TraceStart,TraceEnd,ItemTraceChannel);
 	LastActor=ThisActor;
 	ThisActor=HitResult.GetActor();
-	UE_LOG(LogTemp,Warning,TEXT("Stopped tracing a last actor."));
+	//UE_LOG(LogTemp,Warning,TEXT("Stopped tracing a last actor."));
 
 	if (!ThisActor.IsValid())
 	{
@@ -76,20 +92,4 @@ void AInv_PlayerController::PrimaryInteract()
 	{
 		UE_LOG(LogTemp,Warning,TEXT("Stopped tracing a last actor."));
 	}
-}
-
-void AInv_PlayerController::CreateHUDWidget()
-{
-	if (!IsLocalController())return;
-	HUDWidget=CreateWidget<UInv_HUDWidget>(this,HUDWidgetClass);
-	if (IsValid(HUDWidget))
-	{
-		HUDWidget->AddToViewport();
-	}
-		
-}
-
-void AInv_PlayerController::TraceForItem()
-{
-	
 }
