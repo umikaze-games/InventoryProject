@@ -6,6 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Inventory.h"
+#include "Interaction/Inv_Highlightable.h"
 #include "Items/Components/Inv_ItemComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -71,7 +72,6 @@ void AInv_PlayerController::TraceForItem()
 	GetWorld()->LineTraceSingleByChannel(HitResult,TraceStart,TraceEnd,ItemTraceChannel);
 	LastActor=ThisActor;
 	ThisActor=HitResult.GetActor();
-	//UE_LOG(LogTemp,Warning,TEXT("Stopped tracing a last actor."));
 
 	if (!ThisActor.IsValid())
 	{
@@ -81,6 +81,11 @@ void AInv_PlayerController::TraceForItem()
 	
 	if (ThisActor.IsValid())
 	{
+		if (UActorComponent* Highlightable = ThisActor->FindComponentByInterface(UInv_Highlightable::StaticClass()); IsValid(Highlightable))
+		{
+			IInv_Highlightable::Execute_Highlight(Highlightable);
+		}
+		
 		UE_LOG(LogTemp,Warning,TEXT("Started tracing a new actor."));
 		UInv_ItemComponent* ItemComponent = ThisActor->FindComponentByClass<UInv_ItemComponent>();
 		if (!IsValid(ItemComponent)) return;
@@ -90,6 +95,10 @@ void AInv_PlayerController::TraceForItem()
 
 	if (LastActor.IsValid())
 	{
-		UE_LOG(LogTemp,Warning,TEXT("Stopped tracing a last actor."));
+		if (UActorComponent* Highlightable = LastActor->FindComponentByInterface(UInv_Highlightable::StaticClass()); IsValid(Highlightable))
+		{
+			IInv_Highlightable::Execute_UnHighlight(Highlightable);
+		}
+		
 	}
 }
