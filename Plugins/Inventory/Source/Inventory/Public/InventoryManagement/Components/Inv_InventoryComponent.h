@@ -18,14 +18,15 @@ public:
 	// Sets default values for this component's properties
 	UInv_InventoryComponent();
 
+	void ToggleInventoryMenu();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 private:
-
-	void ConstructInventory();
-
+	bool bInventoryMenuOpen;
+	
 	TWeakObjectPtr<APlayerController>OwningController;
 	
 	UPROPERTY()
@@ -33,4 +34,10 @@ private:
 
 	UPROPERTY(EditAnywhere,Category="Inventory")
 	TSubclassOf<UInv_InventoryBase>InventoryMenuClass;
+
+	void ConstructInventory();
+	void OpenInventoryMenu();
+	void CloseInventoryMenu();
+	
+
 };
