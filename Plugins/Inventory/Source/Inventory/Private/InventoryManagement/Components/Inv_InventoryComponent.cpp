@@ -1,7 +1,7 @@
 ﻿
 #include "InventoryManagement/Components/Inv_InventoryComponent.h"
 
-#include "Widgets/Invetory/InvetoryBase/Inv_InventoryBase.h"
+#include "Inventory/Public/Widgets/Inventory/InventoryBase/Inv_InventoryBase.h"
 
 UInv_InventoryComponent::UInv_InventoryComponent()
 {
