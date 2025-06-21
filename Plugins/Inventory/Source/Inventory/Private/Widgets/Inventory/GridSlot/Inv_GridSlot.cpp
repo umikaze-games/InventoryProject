@@ -1,4 +1,4 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Inventory/Public/Widgets/Inventory/Spatial/Inv_InventoryGrid.h"
+#include "Widgets/Inventory/GridSlot/Inv_GridSlot.h"
