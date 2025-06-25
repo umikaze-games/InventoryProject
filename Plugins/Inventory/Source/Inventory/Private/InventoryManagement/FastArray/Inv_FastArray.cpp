@@ -1,0 +1,1 @@
+﻿#include "InventoryManagement/FastArray/Inv_FastArray.h"

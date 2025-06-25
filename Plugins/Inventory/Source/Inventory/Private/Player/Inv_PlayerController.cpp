@@ -55,7 +55,7 @@ void AInv_PlayerController::SetupInputComponent()
 
 void AInv_PlayerController::PrimaryInteract()
 {
-	
+	UE_LOG(LogTemp, Log, TEXT("Primary Interact"));
 }
 
 void AInv_PlayerController::CreateHUDWidget()

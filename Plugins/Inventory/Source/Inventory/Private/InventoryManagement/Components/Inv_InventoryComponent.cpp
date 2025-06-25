@@ -12,6 +12,7 @@ void UInv_InventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	ConstructInventory();
+	CloseInventoryMenu();
 }
 
 void UInv_InventoryComponent::ConstructInventory()
