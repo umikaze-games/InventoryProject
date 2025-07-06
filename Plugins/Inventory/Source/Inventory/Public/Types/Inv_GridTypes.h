@@ -2,6 +2,8 @@
 
 #include "Inv_GridTypes.generated.h"
 
+class UInv_InventoryItem;
+
 UENUM(BlueprintType)
 enum class EInv_ItemCategory:uint8
 {
