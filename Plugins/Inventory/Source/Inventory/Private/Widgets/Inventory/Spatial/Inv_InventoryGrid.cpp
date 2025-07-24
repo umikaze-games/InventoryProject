@@ -9,6 +9,8 @@
 #include "InventoryManagement/Components/Inv_InventoryComponent.h"
 #include "Items/Inv_InventoryItem.h"
 #include "Items/Components/Inv_ItemComponent.h"
+#include "Items/Fragments/Inv_FragmentTags.h"
+#include "Items/Fragments/Inv_ItemFragment.h"
 #include "Widgets/Inventory/GridSlot/Inv_GridSlot.h"
 #include "Widgets/Utils/Inv_InventoryStatics.h"
 #include "Widgets/Utils/Inv_WidgetUtils.h"
@@ -75,9 +77,18 @@ void UInv_InventoryGrid::AddItem(UInv_InventoryItem* Item)
 	AddItemToIndices(Result,Item);
 }
 
-void UInv_InventoryGrid::AddItemToIndices(const FInv_SlotAvailabilityResult& Result, UInv_InventoryItem* NewItem)
+void UInv_InventoryGrid::AddItemToIndices(
+	const FInv_SlotAvailabilityResult& Result,
+	UInv_InventoryItem* NewItem)
 {
+	const FInv_GridFragment* GridFragment = GetFragment<FInv_GridFragment>(NewItem, FragmentTags::GridFragment);
+	const FInv_ImageFragment* ImageFragment = GetFragment<FInv_ImageFragment>(NewItem, FragmentTags::IconFragment);
+	if (!GridFragment || !ImageFragment) return;
+
+	// Create a widget to add to the grid
+	// Store the new widget in a container.
 }
+
 
 bool UInv_InventoryGrid::MatchesCategory(const UInv_InventoryItem* Item) const
 {
