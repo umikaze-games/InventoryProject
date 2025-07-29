@@ -24,8 +24,7 @@ struct INVENTORY_API FInv_ItemManifest
 
 	FGameplayTag GetItemType() const { return ItemType; }
 
-	template<typename T>
-	requires std::derived_from<T, FInv_ItemFragment>
+	template<typename T> requires std::derived_from<T, FInv_ItemFragment>
 	const T* GetFragmentOfTypeWithTag(const FGameplayTag& FragmentTag) const;
 
 private:
@@ -51,5 +50,7 @@ const T* FInv_ItemManifest::GetFragmentOfTypeWithTag(const FGameplayTag& Fragmen
 			return FragmentPtr;
 		}
 	}
+	
 	return nullptr;
 }
+
