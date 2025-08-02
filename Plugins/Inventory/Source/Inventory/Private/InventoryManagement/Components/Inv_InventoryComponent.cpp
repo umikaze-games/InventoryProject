@@ -1,13 +1,12 @@
-﻿
-#include "InventoryManagement/Components/Inv_InventoryComponent.h"
+﻿#include "InventoryManagement/Components/Inv_InventoryComponent.h"
 
-#include "Inventory/Public/Widgets/Inventory/InventoryBase/Inv_InventoryBase.h"
+#include "Widgets/Inventory/InventoryBase/Inv_InventoryBase.h"
 #include "Net/UnrealNetwork.h"
 
-UInv_InventoryComponent::UInv_InventoryComponent(): InventoryList(this)
+
+UInv_InventoryComponent::UInv_InventoryComponent() : InventoryList(this)
 {
 	PrimaryComponentTick.bCanEverTick = false;
-		
 	SetIsReplicatedByDefault(true);
 	bReplicateUsingRegisteredSubObjectList = true;
 	bInventoryMenuOpen = false;
@@ -29,6 +28,7 @@ void UInv_InventoryComponent::TryAddItem(UInv_ItemComponent* ItemComponent)
 		NoRoomInInventory.Broadcast();
 		return;
 	}
+	
 	if (Result.Item.IsValid() && Result.bStackable)
 	{
 		// Add stacks to an item that already exists in the inventory. We only want to update the stack count,
@@ -45,33 +45,17 @@ void UInv_InventoryComponent::TryAddItem(UInv_ItemComponent* ItemComponent)
 void UInv_InventoryComponent::Server_AddNewItem_Implementation(UInv_ItemComponent* ItemComponent, int32 StackCount)
 {
 	UInv_InventoryItem* NewItem = InventoryList.AddEntry(ItemComponent);
+
 	if (GetOwner()->GetNetMode() == NM_ListenServer || GetOwner()->GetNetMode() == NM_Standalone)
 	{
 		OnItemAdded.Broadcast(NewItem);
 	}
+	// TODO: Tell the Item Component to destroy its owning actor.
 }
 
 void UInv_InventoryComponent::Server_AddStacksToItem_Implementation(UInv_ItemComponent* ItemComponent, int32 StackCount, int32 Remainder)
 {
-
-}
-
-void UInv_InventoryComponent::BeginPlay()
-{
-	Super::BeginPlay();
-	ConstructInventory();
-	CloseInventoryMenu();
-}
-
-void UInv_InventoryComponent::ConstructInventory()
-{
-	OwningController=Cast<APlayerController>(GetOwner());
-	OwningController = Cast<APlayerController>(GetOwner());
-	checkf(OwningController.IsValid(), TEXT("Inventory Component should have a Player Controller as Owner."))
-	if (!OwningController->IsLocalController()) return;
-
-	InventoryMenu = CreateWidget<UInv_InventoryBase>(OwningController.Get(), InventoryMenuClass);
-	InventoryMenu->AddToViewport();
+	
 }
 
 void UInv_InventoryComponent::ToggleInventoryMenu()
@@ -92,6 +76,24 @@ void UInv_InventoryComponent::AddRepSubObj(UObject* SubObj)
 	{
 		AddReplicatedSubObject(SubObj);
 	}
+}
+
+void UInv_InventoryComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	ConstructInventory();
+}
+
+void UInv_InventoryComponent::ConstructInventory()
+{
+	OwningController = Cast<APlayerController>(GetOwner());
+	checkf(OwningController.IsValid(), TEXT("Inventory Component should have a Player Controller as Owner."))
+	if (!OwningController->IsLocalController()) return;
+
+	InventoryMenu = CreateWidget<UInv_InventoryBase>(OwningController.Get(), InventoryMenuClass);
+	InventoryMenu->AddToViewport();
+	CloseInventoryMenu();
 }
 
 void UInv_InventoryComponent::OpenInventoryMenu()
@@ -121,3 +123,6 @@ void UInv_InventoryComponent::CloseInventoryMenu()
 	OwningController->SetInputMode(InputMode);
 	OwningController->SetShowMouseCursor(false);
 }
+
+
+
