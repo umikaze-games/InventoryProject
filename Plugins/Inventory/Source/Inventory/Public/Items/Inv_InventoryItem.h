@@ -26,10 +26,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere, meta = (BaseStruct = "/Script/Inventory.Inv_ItemManifest"), Replicated)
 	FInstancedStruct ItemManifest;
-
 	
-
 };
+
+
 template <typename FragmentType>
 const FragmentType* GetFragment(const UInv_InventoryItem* Item, const FGameplayTag& Tag)
 {

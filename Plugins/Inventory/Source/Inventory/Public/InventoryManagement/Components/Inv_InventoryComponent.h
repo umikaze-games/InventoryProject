@@ -22,11 +22,12 @@ class INVENTORY_API UInv_InventoryComponent : public UActorComponent
 public:
 	// Sets default values for this component's properties
 	UInv_InventoryComponent();
+	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventory")
 	void TryAddItem(UInv_ItemComponent* ItemComponent);
 	
-
 	FInventoryItemChange OnItemAdded;
 	FInventoryItemChange OnItemRemoved;
 	FNoRoomInInventory NoRoomInInventory;
