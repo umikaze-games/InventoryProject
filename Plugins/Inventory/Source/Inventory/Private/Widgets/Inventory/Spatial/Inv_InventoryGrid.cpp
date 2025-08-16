@@ -37,22 +37,33 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const UInv_Invent
 FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemManifest& Manifest)
 {
 	FInv_SlotAvailabilityResult Result;
+
 	// Determine if the item is stackable.
+	const FInv_StackableFragment* StackableFragment = Manifest.GetFragmentOfType<FInv_StackableFragment>();
+	Result.bStackable = StackableFragment != nullptr;
+
 	// Determine how many stacks to add.
+	const int32 MaxStackSize = StackableFragment ? StackableFragment->GetMaxStackSize() : 1;
+	int32 AmountToFill = StackableFragment ? StackableFragment->GetStackCount() : 1;
+
+	TSet<int32> CheckedIndices;
 	// For each Grid Slot:
-	//     If we don't have anymore to fill, break out of the loop early.
-	//     Is this index claimed yet?
-	//     Can the item fit here? (i.e. is it out of grid bounds?)
-	//     Is there room at this index? (i.e. are there other items in the way?)
-	//     Check any other important conditions - ForEach2D over a 2D range
-	//         Index claimed?
-	//         Has valid item?
-	//         Is this item the same type as the item we're trying to add?
-	//         If so, is this a stackable item?
-	//         If stackable, is this slot at the max stack size already?
-	//     How much to fill?
-	//     Update the amount left to fill
-	// How much is the Remainder?
+	for (const auto& GridSlot : GridSlots)
+	{
+		// If we don't have anymore to fill, break out of the loop early.
+		if (AmountToFill == 0) break;
+
+		// Is this index claimed yet?
+		if (IsIndexClaimed(CheckedIndices, GridSlot->GetIndex())) continue;
+
+		// Can the item fit here? (i.e. is it out of grid bounds?)
+		if (!HasRoomAtIndex(GridSlot, GetItemDimensions(Manifest)))
+		{
+			continue;
+		}
+		
+		
+	}
 	return Result;
 }
 
@@ -126,6 +137,29 @@ void UInv_InventoryGrid::UpdateGridSlots(UInv_InventoryItem* NewItem, const int3
 	{
 		GridSlot->SetOccupiedTexture();
 	});
+}
+
+bool UInv_InventoryGrid::IsIndexClaimed(const TSet<int32>& CheckedIndices, const int32 Index) const
+{
+	return CheckedIndices.Contains(Index);
+}
+
+bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlot* GridSlot, const FIntPoint& Dimensions)
+{
+	bool bHasRoomAtIndex = true;
+
+	UInv_InventoryStatics::ForEach2D(GridSlots, GridSlot->GetIndex(), Dimensions, Columns, []()
+	{
+		
+	});
+
+	return bHasRoomAtIndex;
+}
+
+FIntPoint UInv_InventoryGrid::GetItemDimensions(const FInv_ItemManifest& Manifest) const
+{
+	const FInv_GridFragment* GridFragment = Manifest.GetFragmentOfType<FInv_GridFragment>();
+	return GridFragment ? GridFragment->GetGridSize() : FIntPoint(1, 1);
 }
 
 FVector2D UInv_InventoryGrid::GetDrawSize(const FInv_GridFragment* GridFragment) const
