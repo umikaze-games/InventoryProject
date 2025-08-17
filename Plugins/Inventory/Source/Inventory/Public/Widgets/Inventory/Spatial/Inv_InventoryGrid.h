@@ -58,9 +58,12 @@ private:
 	const TSet<int32>& CheckedIndices,
 	TSet<int32>& OutTentativelyClaimed);
 	
-	bool CheckSlotConstraints(const UInv_GridSlot* SubGridSlot) const;
+	bool CheckSlotConstraints(const UInv_GridSlot* SubGridSlot, const TSet<int32>& CheckedIndices, TSet<int32>& OutTentativelyClaimed) const;
 	
 	FIntPoint GetItemDimensions(const FInv_ItemManifest& Manifest) const;
+
+	bool HasValidItem(const UInv_GridSlot* GridSlot) const;
+	
 	void UpdateGridSlots(UInv_InventoryItem* NewItem, const int32 Index);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"),  Category = "Inventory")

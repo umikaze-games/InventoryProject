@@ -156,7 +156,7 @@ bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlot* GridSlot,
 	UInv_InventoryStatics::ForEach2D(GridSlots, GridSlot->GetIndex(), Dimensions, Columns, [&](const UInv_GridSlot* SubGridSlot)
 	{
 		
-		if (CheckSlotConstraints(SubGridSlot))
+		if (CheckSlotConstraints(SubGridSlot, CheckedIndices, OutTentativelyClaimed))
 		{
 			OutTentativelyClaimed.Add(SubGridSlot->GetIndex());
 		}
@@ -172,21 +172,35 @@ bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlot* GridSlot,
 	return bHasRoomAtIndex;
 }
 
-bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlot* SubGridSlot) const
+bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlot* SubGridSlot, const TSet<int32>& CheckedIndices,TSet<int32>& OutTentativelyClaimed) const
 {
-	// Check any other important conditions - ForEach2D over a 2D range
 	// Index claimed?
+	if (IsIndexClaimed(CheckedIndices, SubGridSlot->GetIndex())) return false;
+	
 	// Has valid item?
+	if (!HasValidItem(SubGridSlot))
+	{
+		OutTentativelyClaimed.Add(SubGridSlot->GetIndex());
+		return true;
+	}
+	
 	// Is this item the same type as the item we're trying to add?
 	// If so, is this a stackable item?
 	// If stackable, is this slot at the max stack size already?
+
 	return false;
 }
+
 
 FIntPoint UInv_InventoryGrid::GetItemDimensions(const FInv_ItemManifest& Manifest) const
 {
 	const FInv_GridFragment* GridFragment = Manifest.GetFragmentOfType<FInv_GridFragment>();
 	return GridFragment ? GridFragment->GetGridSize() : FIntPoint(1, 1);
+}
+
+bool UInv_InventoryGrid::HasValidItem(const UInv_GridSlot* GridSlot) const
+{
+	return GridSlot->GetInventoryItem().IsValid();
 }
 
 FVector2D UInv_InventoryGrid::GetDrawSize(const FInv_GridFragment* GridFragment) const
