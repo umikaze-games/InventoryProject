@@ -52,7 +52,14 @@ private:
 
 	void AddSlottedItemToCanvas(const int32 Index, const FInv_GridFragment* GridFragment, UInv_SlottedItem* SlottedItem) const;
 	bool IsIndexClaimed(const TSet<int32>& CheckedIndices, const int32 Index) const;
-	bool HasRoomAtIndex(const UInv_GridSlot* GridSlot, const FIntPoint& Dimensions);
+	
+	bool HasRoomAtIndex(const UInv_GridSlot* GridSlot,
+	const FIntPoint& Dimensions,
+	const TSet<int32>& CheckedIndices,
+	TSet<int32>& OutTentativelyClaimed);
+	
+	bool CheckSlotConstraints(const UInv_GridSlot* SubGridSlot) const;
+	
 	FIntPoint GetItemDimensions(const FInv_ItemManifest& Manifest) const;
 	void UpdateGridSlots(UInv_InventoryItem* NewItem, const int32 Index);
 	
