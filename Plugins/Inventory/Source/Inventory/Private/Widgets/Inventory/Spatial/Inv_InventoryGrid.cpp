@@ -162,9 +162,6 @@ bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlot* GridSlot,
 		}
 		else
 		{
-			
-		}
-		{
 			bHasRoomAtIndex = false;
 		}
 	});
