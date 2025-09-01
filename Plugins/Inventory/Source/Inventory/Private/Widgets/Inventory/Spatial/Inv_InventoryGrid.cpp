@@ -174,20 +174,18 @@ bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlot* GridSlot,
 												const TSet<int32>& CheckedIndices,
 												TSet<int32>& OutTentativelyClaimed) const
 {
-	// Index claimed?
+
 	if (IsIndexClaimed(CheckedIndices, SubGridSlot->GetIndex())) return false;
 	
-	// Has valid item?
 	if (!HasValidItem(SubGridSlot))
 	{
 		OutTentativelyClaimed.Add(SubGridSlot->GetIndex());
 		return true;
 	}
 	
-	// Is this item the same type as the item we're trying to add?
 	if (!IsUpperLeftSlot(GridSlot, SubGridSlot)) return false;
-	// If so, is this a stackable item?
-	// If stackable, is this slot at the max stack size already?
+	const UInv_InventoryItem* SubItem = SubGridSlot->GetInventoryItem().Get();
+	if (!SubItem->IsStackable()) return false;
 
 	return false;
 }
