@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Containers/Set.h"   
 #include "Blueprint/UserWidget.h"
 #include "Types/Inv_GridTypes.h"
 #include "Inv_InventoryGrid.generated.h"
@@ -56,13 +57,16 @@ private:
 	bool HasRoomAtIndex(const UInv_GridSlot* GridSlot,
 	const FIntPoint& Dimensions,
 	const TSet<int32>& CheckedIndices,
+	TSet<int32>& OutTentativelyClaimed,
+	const FGameplayTag& ItemType,
+	const int32 MaxStackSize);
 	
-	TSet<int32>& OutTentativelyClaimed,const FGameplayTag& ItemType);
 	bool CheckSlotConstraints(const UInv_GridSlot* GridSlot,
 		const UInv_GridSlot* SubGridSlot,
 		const TSet<int32>& CheckedIndices,
 		TSet<int32>& OutTentativelyClaimed,
-		const FGameplayTag& ItemType) const;
+		const FGameplayTag& ItemType,
+		const int32 MaxStackSize)const;
 	
 	FIntPoint GetItemDimensions(const FInv_ItemManifest& Manifest) const;
 

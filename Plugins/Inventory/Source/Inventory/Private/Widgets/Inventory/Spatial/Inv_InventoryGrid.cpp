@@ -58,7 +58,7 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemMa
 
 		// Can the item fit here? (i.e. is it out of grid bounds?)
 		TSet<int32> TentativelyClaimed;
-		if (!HasRoomAtIndex(GridSlot, GetItemDimensions(Manifest), CheckedIndices, TentativelyClaimed, Manifest.GetItemType()))
+		if (!HasRoomAtIndex(GridSlot, GetItemDimensions(Manifest), CheckedIndices, TentativelyClaimed, Manifest.GetItemType(), MaxStackSize))
 		{
 			continue;
 		}
@@ -155,14 +155,15 @@ bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlot* GridSlot,
 										const FIntPoint& Dimensions,
 										const TSet<int32>& CheckedIndices,
 										TSet<int32>& OutTentativelyClaimed,
-										const FGameplayTag& ItemType)
+										const FGameplayTag& ItemType,
+										const int32 MaxStackSize)
 {
 	bool bHasRoomAtIndex = true;
 
 	UInv_InventoryStatics::ForEach2D(GridSlots, GridSlot->GetIndex(), Dimensions, Columns, [&](const UInv_GridSlot* SubGridSlot)
 	{
 		
-		if (CheckSlotConstraints(GridSlot, SubGridSlot, CheckedIndices, OutTentativelyClaimed, ItemType))
+		if (CheckSlotConstraints(GridSlot, SubGridSlot, CheckedIndices, OutTentativelyClaimed, ItemType, MaxStackSize))
 		{
 			OutTentativelyClaimed.Add(SubGridSlot->GetIndex());
 		}
@@ -179,7 +180,8 @@ bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlot* GridSlot,
 												const UInv_GridSlot* SubGridSlot,
 												const TSet<int32>& CheckedIndices,
 												TSet<int32>& OutTentativelyClaimed,
-												const FGameplayTag& ItemType) const
+												const FGameplayTag& ItemType,
+												const int32 MaxStackSize) const
 {
 
 	if (IsIndexClaimed(CheckedIndices, SubGridSlot->GetIndex())) return false;
@@ -196,9 +198,10 @@ bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlot* GridSlot,
 	
 	if (!DoesItemTypeMatch(SubItem, ItemType)) return false;
 	
-	return false;
+	if (GridSlot->GetStackCount() >= MaxStackSize) return false;
+	
+	return true;
 }
-
 
 FIntPoint UInv_InventoryGrid::GetItemDimensions(const FInv_ItemManifest& Manifest) const
 {
