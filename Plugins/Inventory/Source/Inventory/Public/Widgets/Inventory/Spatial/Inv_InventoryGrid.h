@@ -56,9 +56,13 @@ private:
 	bool HasRoomAtIndex(const UInv_GridSlot* GridSlot,
 	const FIntPoint& Dimensions,
 	const TSet<int32>& CheckedIndices,
-	TSet<int32>& OutTentativelyClaimed);
 	
-	bool CheckSlotConstraints(const UInv_GridSlot* GridSlot, const UInv_GridSlot* SubGridSlot, const TSet<int32>& CheckedIndices, TSet<int32>& OutTentativelyClaimed) const;
+	TSet<int32>& OutTentativelyClaimed,const FGameplayTag& ItemType);
+	bool CheckSlotConstraints(const UInv_GridSlot* GridSlot,
+		const UInv_GridSlot* SubGridSlot,
+		const TSet<int32>& CheckedIndices,
+		TSet<int32>& OutTentativelyClaimed,
+		const FGameplayTag& ItemType) const;
 	
 	FIntPoint GetItemDimensions(const FInv_ItemManifest& Manifest) const;
 
@@ -66,6 +70,8 @@ private:
 
 	bool IsUpperLeftSlot(const UInv_GridSlot* GridSlot, const UInv_GridSlot* SubGridSlot) const;
 	
+	bool DoesItemTypeMatch(const UInv_InventoryItem* SubItem, const FGameplayTag& ItemType) const;
+
 	void UpdateGridSlots(UInv_InventoryItem* NewItem, const int32 Index);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"),  Category = "Inventory")

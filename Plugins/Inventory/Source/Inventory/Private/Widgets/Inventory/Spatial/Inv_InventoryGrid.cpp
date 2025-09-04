@@ -58,7 +58,7 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem(const FInv_ItemMa
 
 		// Can the item fit here? (i.e. is it out of grid bounds?)
 		TSet<int32> TentativelyClaimed;
-		if (!HasRoomAtIndex(GridSlot, GetItemDimensions(Manifest), CheckedIndices, TentativelyClaimed))
+		if (!HasRoomAtIndex(GridSlot, GetItemDimensions(Manifest), CheckedIndices, TentativelyClaimed, Manifest.GetItemType()))
 		{
 			continue;
 		}
@@ -145,18 +145,24 @@ bool UInv_InventoryGrid::IsIndexClaimed(const TSet<int32>& CheckedIndices, const
 	return CheckedIndices.Contains(Index);
 }
 
+bool UInv_InventoryGrid::DoesItemTypeMatch(const UInv_InventoryItem* SubItem, const FGameplayTag& ItemType) const
+{
+	return SubItem->GetItemManifest().GetItemType().MatchesTagExact(ItemType);
+}
+
 
 bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlot* GridSlot,
 										const FIntPoint& Dimensions,
 										const TSet<int32>& CheckedIndices,
-										TSet<int32>& OutTentativelyClaimed)
+										TSet<int32>& OutTentativelyClaimed,
+										const FGameplayTag& ItemType)
 {
 	bool bHasRoomAtIndex = true;
 
 	UInv_InventoryStatics::ForEach2D(GridSlots, GridSlot->GetIndex(), Dimensions, Columns, [&](const UInv_GridSlot* SubGridSlot)
 	{
 		
-		if (CheckSlotConstraints(GridSlot, SubGridSlot, CheckedIndices, OutTentativelyClaimed))
+		if (CheckSlotConstraints(GridSlot, SubGridSlot, CheckedIndices, OutTentativelyClaimed, ItemType))
 		{
 			OutTentativelyClaimed.Add(SubGridSlot->GetIndex());
 		}
@@ -172,7 +178,8 @@ bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlot* GridSlot,
 bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlot* GridSlot,
 												const UInv_GridSlot* SubGridSlot,
 												const TSet<int32>& CheckedIndices,
-												TSet<int32>& OutTentativelyClaimed) const
+												TSet<int32>& OutTentativelyClaimed,
+												const FGameplayTag& ItemType) const
 {
 
 	if (IsIndexClaimed(CheckedIndices, SubGridSlot->GetIndex())) return false;
@@ -186,7 +193,9 @@ bool UInv_InventoryGrid::CheckSlotConstraints(const UInv_GridSlot* GridSlot,
 	if (!IsUpperLeftSlot(GridSlot, SubGridSlot)) return false;
 	const UInv_InventoryItem* SubItem = SubGridSlot->GetInventoryItem().Get();
 	if (!SubItem->IsStackable()) return false;
-
+	
+	if (!DoesItemTypeMatch(SubItem, ItemType)) return false;
+	
 	return false;
 }
 
